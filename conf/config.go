@@ -12,8 +12,10 @@ var (
 	GOSDKPATH string
 	// go version list file path
 	GOVERSIONFILE string
+	// default GOSDK version list url
+	GOSDKVERURL string = "https://qiniu.github.bearki.cn/gov/version/version.json"
 	// default GOSDK download url
-	GOSDKBASEURL string = "https://golang.google.cn/dl/"
+	GOSDKDOWNURL string = "https://mirrors.ustc.edu.cn/golang"
 )
 
 // init env
@@ -31,11 +33,18 @@ func init() {
 		GOSDKPATH = goSdkPath
 	}
 
+	// 配置json文件的存放路径
 	GOVERSIONFILE = filepath.Join(GOSDKPATH, "version.json")
 
+	// 从环境变量中获取SDK版本列表网址BaseUrl
+	goSdkVerUrl := os.Getenv("GOSDKVERURL")
+	if len(goSdkVerUrl) > 0 {
+		GOSDKDOWNURL = goSdkVerUrl
+	}
+
 	// 从环境变量中获取SDK下载网址BaseUrl
-	goSdkBaseUrl := os.Getenv("GOSDKBASEURL")
-	if len(goSdkBaseUrl) > 0 {
-		GOSDKBASEURL = goSdkBaseUrl
+	goSdkDownUrl := os.Getenv("GOSDKDOWNURL")
+	if len(goSdkDownUrl) > 0 {
+		GOSDKDOWNURL = goSdkDownUrl
 	}
 }

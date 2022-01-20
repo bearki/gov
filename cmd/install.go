@@ -114,7 +114,7 @@ func install(c *cobra.Command, args []string) {
 		return
 	}
 	// 定义下载地址
-	downloadUrl := fmt.Sprintf("%s%s", conf.GOSDKBASEURL, version.FileName)
+	downloadUrl := fmt.Sprintf("%s/%s", conf.GOSDKDOWNURL, version.FileName)
 	// 定义保存路径
 	savePath := filepath.Join(conf.GOSDKPATH, "pkg", version.FileName)
 	// 开始下载

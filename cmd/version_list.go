@@ -127,7 +127,7 @@ func getRemoteVersionList() ([]*Version, error) {
 	tool.L.Info("Fetching version list from remote......")
 	// 获取版本信息
 	var response []*Version
-	err := beclient.New(conf.GOSDKBASEURL).
+	err := beclient.New(conf.GOSDKVERURL).
 		Query("mode", "json").
 		Query("include", "all").
 		ContentType(beclient.ContentTypeFormURL).
