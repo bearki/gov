@@ -7,7 +7,7 @@ import (
 
 var (
 	// gov version
-	Version string
+	Version string = "v0.0.3"
 	// default GOSDK path
 	GOSDKPATH string
 	// go version list file path
