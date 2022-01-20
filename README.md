@@ -5,7 +5,7 @@ This is a small and flexible Golang SDK multi-version management tool
 > 首先很抱歉的告诉大家，使用这个工具需要一些配置，但是很简单。 2分钟左右就可以配置好，然后就可以愉快的使用了。
 
 ## 二、环境变量解释
-> 有两个强烈建议的环境变量【 GOSDKPATH，GOROOT 】，以及两个个可选的环境变量【 GOSDKVERURL，GOSDKDOWNURL 】需要配置,下面详细解释一下这几个环境变量的作用。
+> 有两个强烈建议的环境变量【 GOSDKPATH，GOROOT 】，以及两个可选的环境变量【 GOSDKVERURL，GOSDKDOWNURL 】需要配置,下面详细解释一下这几个环境变量的作用。
 
 ### GOSDKPATH
 > Gov在启动时会去操作系统中获取该环境变量的值，该值应该是一个文件夹，用于储存Gov工具所需要的依赖文件以及Golang SDK的各个版本文件，所以该环境变量至关重要，再不配置该环境变量时，Gov将会采用当前的工作目录作为储存路径，由于工作目录容易变化，因此我们强烈建议在操作系统中为该环境变量赋值。
