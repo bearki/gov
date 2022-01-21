@@ -66,12 +66,6 @@ func list(c *cobra.Command, args []string) {
 		return
 	}
 
-	// 压缩包后缀
-	fileExt := "tar.gz"
-	if runtime.GOOS == "windows" {
-		fileExt = "zip"
-	}
-
 	// 获取远程版本列表
 	versionList, err := getRemoteVersionList()
 	if err != nil {
@@ -92,49 +86,77 @@ func list(c *cobra.Command, args []string) {
 	switch show {
 
 	case "yes": // 仅显示已安装
+		// 总量
+		total := 0
 		for _, item := range versionList {
-			// 拼接文件名
-			filename := fmt.Sprintf(
-				"%s.%s-%s.%s",
-				item.Version,
-				runtime.GOOS,
-				runtime.GOARCH,
-				fileExt,
-			)
+			// 文件名
+			filename := ""
+			for _, items := range item.Files {
+				if items.Arch == runtime.GOARCH && items.OS == runtime.GOOS {
+					filename = items.FileName
+					break
+				}
+			}
+			// 判断是否有匹配到文件
+			if len(filename) == 0 {
+				// 跳过
+				continue
+			}
 			// 判断文件是否存在
 			if _, ok := tempVersionMap[filename]; ok {
+				total++
 				// 已安装
 				tool.L.Info("%-20s %-40s [installed]", item.Version, filename)
 			}
 		}
+		tool.L.Warn("SDK Total: %d", total)
 
 	case "not": // 仅显示未安装
+		// 总量
+		total := 0
 		for _, item := range versionList {
-			// 拼接文件名
-			filename := fmt.Sprintf(
-				"%s.%s-%s.%s",
-				item.Version,
-				runtime.GOOS,
-				runtime.GOARCH,
-				fileExt,
-			)
+			// 文件名
+			filename := ""
+			for _, items := range item.Files {
+				if items.Arch == runtime.GOARCH && items.OS == runtime.GOOS {
+					filename = items.FileName
+					break
+				}
+			}
+			// 判断是否有匹配到文件
+			if len(filename) == 0 {
+				// 跳过
+				continue
+			}
 			// 判断文件是否存在
 			if _, ok := tempVersionMap[filename]; !ok {
+				// 总量加一
+				total++
 				// 未安装
 				tool.L.Info("%-20s %-40s [not installed]", item.Version, filename)
 			}
 		}
+		tool.L.Warn("SDK Total: %d", total)
 
 	default: // 显示全部
+		// 总量
+		total := 0
 		for _, item := range versionList {
-			// 拼接文件名
-			filename := fmt.Sprintf(
-				"%s.%s-%s.%s",
-				item.Version,
-				runtime.GOOS,
-				runtime.GOARCH,
-				fileExt,
-			)
+			// 文件名
+			filename := ""
+			for _, items := range item.Files {
+				if items.Arch == runtime.GOARCH && items.OS == runtime.GOOS {
+					filename = items.FileName
+					break
+				}
+			}
+			// 判断是否有匹配到文件
+			if len(filename) == 0 {
+				// 跳过
+				continue
+			}
+			// 总量加一
+			total++
 			// 判断文件是否存在
 			if _, ok := tempVersionMap[filename]; ok {
 				// 已安装
@@ -144,6 +166,7 @@ func list(c *cobra.Command, args []string) {
 				tool.L.Info("%-20s %-40s [not installed]", item.Version, filename)
 			}
 		}
+		tool.L.Warn("SDK Total: %d", total)
 
 	}
 }
