@@ -59,7 +59,7 @@ func use(c *cobra.Command, args []string) {
 		}
 		// 文件不存在下载新版本
 		goto DOWNLOADFILE
-	} else if tool.MathSha256(sdkData) != version.Sha256 { // 校验sha256失败
+	} else if version.Sha256 != "" && tool.MathSha256(sdkData) != version.Sha256 { // 校验sha256失败
 		// 文件不完整，重新下载该版本
 		goto DOWNLOADFILE
 	} else { // 文件已存在，并且sha256校验正确

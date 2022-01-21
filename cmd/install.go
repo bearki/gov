@@ -132,15 +132,18 @@ func install(c *cobra.Command, args []string) {
 		tool.L.Error(fmt.Sprintf("Download Error\r\n%s", err.Error()))
 		return
 	}
-	// 判断hash256是否一致
-	fileData, err := ioutil.ReadFile(savePath)
-	if err != nil {
-		tool.L.Error(err.Error())
-		return
-	}
-	if version.Sha256 != tool.MathSha256(fileData) {
-		tool.L.Error("The downloaded file is incomplete")
-		return
+	// 兼容一下不需要校验sha256的
+	if version.Sha256 != "" {
+		// 判断hash256是否一致
+		fileData, err := ioutil.ReadFile(savePath)
+		if err != nil {
+			tool.L.Error(err.Error())
+			return
+		}
+		if version.Sha256 != tool.MathSha256(fileData) {
+			tool.L.Error("The downloaded file is incomplete")
+			return
+		}
 	}
 	// 下载成功了
 	tool.L.Success("%s download success", version.FileName)
