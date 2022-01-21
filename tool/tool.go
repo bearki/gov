@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/gookit/color"
 )
@@ -89,7 +90,9 @@ func DeCompressZip(zipFile string, dstPath string) error {
 	// 注意：reader.File获取到的是压缩包内的所有文件，包括子文件夹下的文件
 	for _, file := range reader.File {
 		// 去掉第一层文件夹
-		pathList := filepath.SplitList(file.Name)
+		newFileName := strings.ReplaceAll(filepath.Join(file.Name), "\\", "/")
+		pathList := strings.Split(newFileName, "/")
+		fmt.Println(pathList)
 		if len(pathList) >= 2 {
 			pathList = pathList[1:]
 		}
