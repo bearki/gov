@@ -1,3 +1,4 @@
+echo off
 chcp 65001
 
 SET VERSION=0.0.6
