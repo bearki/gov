@@ -85,18 +85,17 @@ func DeCompressZip(zipFile string, dstPath string) error {
 		return err
 	}
 	defer reader.Close()
-	// 最外层文件夹的长度
-	dirLen := 0
 	// 遍历压缩包的内容
 	// 注意：reader.File获取到的是压缩包内的所有文件，包括子文件夹下的文件
-	for i, file := range reader.File {
-		// 文件或文件夹的目标路径
-		dstFile := filepath.Join(dstPath, file.Name[dirLen:])
-		// 忽略掉最外层的压缩包名文件夹
-		if i == 0 {
-			dirLen = len(file.Name)
-			continue
+	for _, file := range reader.File {
+		// 去掉第一层文件夹
+		pathList := filepath.SplitList(file.Name)
+		if len(pathList) >= 2 {
+			pathList = pathList[1:]
 		}
+		// 文件或文件夹的目标路径
+		dstFile := filepath.Join(pathList...)
+		dstFile = filepath.Join(dstPath, dstFile)
 		// 文件夹就不解压出来了
 		if file.FileInfo().IsDir() { // 文件夹
 			// 不管三七二十一，先创建目标文件夹
