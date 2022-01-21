@@ -53,7 +53,8 @@ gov help
 ```
 
 ## 五、更新Gov
-跟新的前提是你必须安装了Go
+1. 使用Go来更新Gov
 ```shell
 go install github.com/bearki/gov@latest
 ```
+2. 前往发布页下载二进制包https://github.com/bearki/gov/releases
