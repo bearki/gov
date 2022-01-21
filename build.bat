@@ -1,5 +1,11 @@
 chcp 65001
-go build ^
--ldflags "-s -w -X github.com/bearki/gov/conf.Version=0.0.0.1" ^
--o gov.exe ^
-.
+
+SET GOOS=windows
+SET GOARCH=386
+go build -ldflags "-s -w" -o gov0.0.4.%GOOS%-%GOARCH%.exe .
+upx gov0.0.4.%GOOS%-%GOARCH%.exe
+
+SET GOOS=windows
+SET GOARCH=adm64
+go build -ldflags "-s -w" -o gov0.0.4.%GOOS%-%GOARCH%.exe .
+upx gov0.0.4.%GOOS%-%GOARCH%.exe

@@ -92,7 +92,6 @@ func DeCompressZip(zipFile string, dstPath string) error {
 		// 去掉第一层文件夹
 		newFileName := strings.ReplaceAll(filepath.Join(file.Name), "\\", "/")
 		pathList := strings.Split(newFileName, "/")
-		fmt.Println(pathList)
 		if len(pathList) >= 2 {
 			pathList = pathList[1:]
 		}
