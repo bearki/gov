@@ -51,3 +51,9 @@ export PATH="$GOROOT/bin:$GOPATH/bin:$PATH"
 ```shell
 gov help
 ```
+
+## 五、更新Gov
+跟新的前提是你必须安装了Go
+```shell
+go install github.com/bearki/gov@latest
+```
