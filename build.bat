@@ -1,7 +1,7 @@
 echo off
 chcp 65001
 
-SET VERSION=0.0.7
+SET VERSION=0.0.8
 
 SET GOOS=windows
 SET GOARCH=386

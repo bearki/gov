@@ -94,7 +94,7 @@ USEVERSION:
 	// 解压完成
 	tool.L.Success("The compressed file was decompressed successfully......")
 	// 移除软链
-	err = os.RemoveAll(os.Getenv("GOROOT"))
+	err = os.RemoveAll(conf.GOROOT)
 	if err != nil {
 		tool.L.Error(err.Error())
 		return
@@ -106,7 +106,7 @@ USEVERSION:
 			"/c",
 			"mklink",
 			"/J",
-			os.Getenv("GOROOT"),
+			conf.GOROOT,
 			sdkPath,
 		)
 		err = runCmd.Run()
