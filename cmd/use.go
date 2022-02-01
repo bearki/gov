@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -78,6 +79,12 @@ DOWNLOADFILE:
 USEVERSION:
 	// 配置SDK所在目录
 	sdkPath := filepath.Join(conf.GOSDKPATH, "sdk", version.Version)
+	// mkdir
+	err = os.MkdirAll(sdkPath, 0755)
+	if err != nil {
+		tool.L.Error(err.Error())
+		return
+	}
 	// 判断是否是ZIP压缩包
 	tool.L.Info("Unzipping compressed file......")
 	if strings.Contains(version.FileName, "zip") {
@@ -91,24 +98,36 @@ USEVERSION:
 		// 解压tar.gz，依赖于linux tar工具，后面有时间了会替换掉
 		decodeCmd := exec.Command(
 			"tar",
-			"-zx",
+			"-zxf",
 			goSdkFilePath,
 			"-C",
 			sdkPath,
 		)
+		// 重定向错误信息
+		decodeErrBuf := bytes.NewBuffer(nil)
+		decodeCmd.Stderr = decodeErrBuf
 		err := decodeCmd.Run()
 		if err != nil {
+			tool.L.Error(decodeErrBuf.String())
 			tool.L.Error(err.Error())
 			return
 		}
-		// 将go文件夹直接放置在外层
-		mvCmd := exec.Command(
-			"mv",
+		// 将go文件夹中的内容直接放置在外层
+		// mvCmd := exec.Command(
+		// 	"mv",
+		// 	filepath.Join(sdkPath, "go", "*"),
+		// 	sdkPath,
+		// )
+		err = os.Rename(
 			filepath.Join(sdkPath, "go"),
 			sdkPath,
 		)
-		err = mvCmd.Run()
+		// // 重定向错误信息
+		// mvErrBuf := bytes.NewBuffer(nil)
+		// mvCmd.Stderr = mvErrBuf
+		// err = mvCmd.Run()
 		if err != nil {
+			// tool.L.Error(mvErrBuf.String())
 			tool.L.Error(err.Error())
 			return
 		}
@@ -138,7 +157,6 @@ USEVERSION:
 			conf.GOROOT,
 			sdkPath,
 		)
-
 	} else {
 		runCmd = exec.Command(
 			"ln",
@@ -146,10 +164,13 @@ USEVERSION:
 			sdkPath,
 			conf.GOROOT,
 		)
-		fmt.Println("linux")
 	}
+	// 重定向错误信息
+	runErrBuf := bytes.NewBuffer(nil)
+	runCmd.Stderr = runErrBuf
 	err = runCmd.Run()
 	if err != nil {
+		tool.L.Error(runErrBuf.String())
 		tool.L.Error(err.Error())
 		return
 	}
