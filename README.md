@@ -2,7 +2,7 @@
 This is a small and flexible Golang SDK multi-version management tool
 
 ## 一、提示
-> 首先很抱歉的告诉大家，使用这个工具需要一些配置，但是很简单。 2分钟左右就可以配置好，然后就可以愉快的使用了。
+> 经过一系列优化，该工具可在无任何配置状态下直接使用，是的，非常爽，但是目前在windows环境下有缺陷，首次使用gov安装golang环境后会出现go命令找不到的情况，这是由于windows全局环境变量未刷新造成的，注销一下用户或重启计算机即可使用，如有解决方案请随时通知我。
 
 ## 二、环境变量解释
 > 有两个强烈建议的环境变量【 GOSDKPATH，GOROOT 】，以及两个可选的环境变量【 GOSDKVERURL，GOSDKDOWNURL 】需要配置,下面详细解释一下这几个环境变量的作用。
