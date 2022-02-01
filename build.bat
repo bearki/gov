@@ -17,11 +17,6 @@ SET OUTFILE=.\build\gov%VERSION%.%GOOS%-%GOARCH%.exe
 go build -ldflags "-s -w" -o %OUTFILE% .
 upx -9 %OUTFILE%
 
-SET GOARCH=arm64
-SET OUTFILE=.\build\gov%VERSION%.%GOOS%-%GOARCH%.exe
-go build -ldflags "-s -w" -o %OUTFILE% .
-upx -9 %OUTFILE%
-
 
 @REM ------------------------------ OS Linux ------------------------------
 SET GOOS=linux
