@@ -95,44 +95,8 @@ USEVERSION:
 			return
 		}
 	} else {
-		// 解压tar.gz，依赖于linux tar工具，后面有时间了会替换掉
-		decodeCmd := exec.Command(
-			"tar",
-			"-zxf",
-			goSdkFilePath,
-			"-C",
-			sdkPath,
-		)
-		// 重定向错误信息
-		decodeErrBuf := bytes.NewBuffer(nil)
-		decodeCmd.Stderr = decodeErrBuf
-		err := decodeCmd.Run()
-		if err != nil {
-			tool.L.Error(decodeErrBuf.String())
-			tool.L.Error(err.Error())
-			return
-		}
-		// 将go文件夹中的内容直接放置在外层
-		// mvCmd := exec.Command(
-		// 	"mv",
-		// 	filepath.Join(sdkPath, "go", "*"),
-		// 	sdkPath,
-		// )
-		err = os.Rename(
-			filepath.Join(sdkPath, "go"),
-			sdkPath,
-		)
-		// // 重定向错误信息
-		// mvErrBuf := bytes.NewBuffer(nil)
-		// mvCmd.Stderr = mvErrBuf
-		// err = mvCmd.Run()
-		if err != nil {
-			// tool.L.Error(mvErrBuf.String())
-			tool.L.Error(err.Error())
-			return
-		}
-		// 移除掉空的go文件夹
-		err = os.RemoveAll(filepath.Join(sdkPath, "go"))
+		// 解压tar.gz
+		err = tool.DeCompressGzip(goSdkFilePath, sdkPath)
 		if err != nil {
 			tool.L.Error(err.Error())
 			return
