@@ -40,7 +40,7 @@ func init() {
 			GOSDKPATH = filepath.Join(os.Getenv("LOCALAPPDATA"), "Gov")
 		} else { // 其他系统环境变量
 			// 其他环境下指定默认的GOSDKPATH
-			GOSDKPATH = filepath.Join("/tmp", "Gov")
+			GOSDKPATH = filepath.Join("/usr", "local", "Gov")
 		}
 	}
 
@@ -76,7 +76,7 @@ func init() {
 			}
 		} else { // 其他系统环境变量
 			// 其他环境下指定默认的GOROOT
-			GOROOT = filepath.Join("/tmp", "Go")
+			GOROOT = filepath.Join("/usr", "local", "Go")
 			// 写入环境变量
 			envStr := fmt.Sprintf(
 				"%s\n%s",
