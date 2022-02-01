@@ -12,7 +12,7 @@ import (
 )
 
 // gov version
-var Version = "0.0.8"
+var Version = "0.0.9"
 
 var (
 	// default GOSDK path
@@ -83,13 +83,13 @@ func init() {
 				"export GOROOT="+GOROOT,
 				"export PATH=$GOROOT/bin:$PATH",
 			)
-			cmd := exec.Command("echo", "~/.bashrc", "<<", envStr)
+			cmd := exec.Command("echo", "/etc/profile", "<<", envStr)
 			err := cmd.Run()
 			if err != nil {
 				tool.L.Error(err.Error())
 				return
 			}
-			cmd = exec.Command("source", "~/.bashrc")
+			cmd = exec.Command("source", "/etc/profile")
 			err = cmd.Run()
 			if err != nil {
 				tool.L.Error(err.Error())

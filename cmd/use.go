@@ -88,8 +88,36 @@ USEVERSION:
 			return
 		}
 	} else {
-		// 解压tar.gz
-		fmt.Printf("not tar.gz")
+		// 解压tar.gz，依赖于linux tar工具，后面有时间了会替换掉
+		decodeCmd := exec.Command(
+			"tar",
+			"-zx",
+			goSdkFilePath,
+			"-C",
+			sdkPath,
+		)
+		err := decodeCmd.Run()
+		if err != nil {
+			tool.L.Error(err.Error())
+			return
+		}
+		// 将go文件夹直接放置在外层
+		mvCmd := exec.Command(
+			"mv",
+			filepath.Join(sdkPath, "go"),
+			sdkPath,
+		)
+		err = mvCmd.Run()
+		if err != nil {
+			tool.L.Error(err.Error())
+			return
+		}
+		// 移除掉空的go文件夹
+		err = os.RemoveAll(filepath.Join(sdkPath, "go"))
+		if err != nil {
+			tool.L.Error(err.Error())
+			return
+		}
 	}
 	// 解压完成
 	tool.L.Success("The compressed file was decompressed successfully......")
@@ -100,8 +128,9 @@ USEVERSION:
 		return
 	}
 	// 创建软链
+	var runCmd *exec.Cmd
 	if runtime.GOOS == "windows" {
-		runCmd := exec.Command(
+		runCmd = exec.Command(
 			"cmd",
 			"/c",
 			"mklink",
@@ -109,13 +138,21 @@ USEVERSION:
 			conf.GOROOT,
 			sdkPath,
 		)
-		err = runCmd.Run()
-		if err != nil {
-			tool.L.Error(err.Error())
-			return
-		}
+
 	} else {
+		runCmd = exec.Command(
+			"ln",
+			"-bsnf",
+			sdkPath,
+			conf.GOROOT,
+		)
 		fmt.Println("linux")
 	}
+	err = runCmd.Run()
+	if err != nil {
+		tool.L.Error(err.Error())
+		return
+	}
+	// 创建成功
 	tool.L.Success("Switched to version %s", args[0])
 }
