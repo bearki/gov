@@ -40,7 +40,7 @@ func init() {
 			GOSDKPATH = filepath.Join(os.Getenv("LOCALAPPDATA"), "Gov")
 		} else { // 其他系统环境变量
 			// 其他环境下指定默认的GOSDKPATH
-			GOSDKPATH = filepath.Join("/usr", "local", "Gov")
+			GOSDKPATH = filepath.Join("$HOME", "Gov")
 		}
 	}
 
@@ -76,20 +76,20 @@ func init() {
 			}
 		} else { // 其他系统环境变量
 			// 其他环境下指定默认的GOROOT
-			GOROOT = filepath.Join("/usr", "local", "Go")
+			GOROOT = filepath.Join("$HOME", "Go")
 			// 写入环境变量
 			envStr := fmt.Sprintf(
 				"%s\n%s",
 				"export GOROOT="+GOROOT,
 				"export PATH=$GOROOT/bin:$PATH",
 			)
-			cmd := exec.Command("echo", "/etc/profile", "<<", envStr)
+			cmd := exec.Command("echo", "~/.bashrc", "<<", envStr)
 			err := cmd.Run()
 			if err != nil {
 				tool.L.Error(err.Error())
 				return
 			}
-			cmd = exec.Command("source", "/etc/profile")
+			cmd = exec.Command("source", "~/.bashrc")
 			err = cmd.Run()
 			if err != nil {
 				tool.L.Error(err.Error())
@@ -100,7 +100,7 @@ func init() {
 
 	// 从环境变量中获取SDK版本列表网址BaseUrl(环境变量优先级最高)
 	goSdkVerUrl := os.Getenv("GOSDKVERURL")
-	if len(goSdkVerUrl) > 0 {
+	if strings.Contains(goSdkVerUrl, "http") {
 		// 赋值获取到的环境变量
 		GOSDKVERURL = goSdkVerUrl
 	} else {
@@ -110,7 +110,7 @@ func init() {
 
 	// 从环境变量中获取SDK下载网址BaseUrl(环境变量优先级最高)
 	goSdkDownUrl := os.Getenv("GOSDKDOWNURL")
-	if len(goSdkDownUrl) > 0 {
+	if strings.Contains(goSdkDownUrl, "http") {
 		// 赋值获取到的环境变量
 		GOSDKDOWNURL = goSdkDownUrl
 	} else {

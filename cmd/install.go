@@ -1,5 +1,5 @@
 /**
- *@Title Download golang sdk
+ *@Title install command
  *@Desc If the version already exists locally,
  *		it will no longer be downloaded
  *@Author Bearki
