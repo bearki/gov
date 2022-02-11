@@ -12,7 +12,7 @@ import (
 )
 
 // gov version
-var Version = "0.1.1"
+var Version = "0.1.2"
 
 var (
 	// default GOSDK path
