@@ -80,8 +80,8 @@ func Init() error {
 			GOROOT = filepath.Join(os.Getenv("HOME"), "Go")
 			// 写入环境变量
 			envStr := fmt.Sprintf(
-				"%s\n%s\n",
-				"export GOROOT="+GOROOT,
+				"\n%s\n%s\n",
+				"export GOROOT=$HOME/Go",
 				"export PATH=$GOROOT/bin:$PATH",
 			)
 			file, err := os.OpenFile(
@@ -103,7 +103,8 @@ func Init() error {
 			cmd := exec.Command(
 				"/bin/bash",
 				"-c",
-				"source "+os.Getenv("HOME")+"/.bashrc",
+				"source",
+				filepath.Join(os.Getenv("HOME"), ".bashrc"),
 			)
 			err = cmd.Run()
 			var errBuf bytes.Buffer
