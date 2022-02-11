@@ -103,8 +103,8 @@ func Init() error {
 			cmd := exec.Command(
 				"/bin/bash",
 				"-c",
-				"source",
-				filepath.Join(os.Getenv("HOME"), ".bashrc"),
+				"source "+
+					filepath.Join(os.Getenv("HOME"), ".bashrc"),
 			)
 			err = cmd.Run()
 			var errBuf bytes.Buffer
