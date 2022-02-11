@@ -1,6 +1,7 @@
 package conf
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -28,7 +29,7 @@ var (
 )
 
 // init env
-func init() {
+func Init() error {
 	// 从环境变量中获取SDK存放路径(环境变量优先级最高)
 	goSdkPath := os.Getenv("GOSDKPATH")
 	if len(goSdkPath) > 0 {
@@ -60,18 +61,18 @@ func init() {
 			err := tool.SetRegistryValue("GOROOT", GOROOT, 1)
 			if err != nil {
 				tool.L.Error(err.Error())
-				return
+				return err
 			}
 			PATH, err := tool.GetRegistryValue("PATH")
 			if err != nil {
 				tool.L.Error(err.Error())
-				return
+				return err
 			}
 			if !strings.Contains(PATH, "%GOROOT%\\bin") {
 				err = tool.SetRegistryValue("PATH", "%GOROOT%\\bin;"+PATH, 2)
 				if err != nil {
 					tool.L.Error(err.Error())
-					return
+					return err
 				}
 			}
 		} else { // 其他系统环境变量
@@ -79,21 +80,37 @@ func init() {
 			GOROOT = filepath.Join(os.Getenv("HOME"), "Go")
 			// 写入环境变量
 			envStr := fmt.Sprintf(
-				"%s\n%s",
+				"%s\n%s\n",
 				"export GOROOT="+GOROOT,
 				"export PATH=$GOROOT/bin:$PATH",
 			)
-			cmd := exec.Command("echo", envStr, ">>", filepath.Join(os.Getenv("HOME"), ".bashrc"))
-			err := cmd.Run()
+			file, err := os.OpenFile(
+				filepath.Join(os.Getenv("HOME"), ".bashrc"),
+				os.O_CREATE|os.O_APPEND|os.O_WRONLY,
+				0777,
+			)
 			if err != nil {
 				tool.L.Error(err.Error())
-				return
+				return err
 			}
-			cmd = exec.Command("source", filepath.Join(os.Getenv("HOME"), ".bashrc"))
-			err = cmd.Run()
+			defer file.Close()
+			_, err = file.WriteString(envStr)
 			if err != nil {
 				tool.L.Error(err.Error())
-				return
+				return err
+			}
+			// 加载环境变量
+			cmd := exec.Command(
+				"/bin/bash",
+				"-c",
+				"source "+os.Getenv("HOME")+"/.bashrc",
+			)
+			err = cmd.Run()
+			var errBuf bytes.Buffer
+			cmd.Stderr = &errBuf
+			if err != nil {
+				tool.L.Error("%s | %s", errBuf.String(), err.Error())
+				return err
 			}
 		}
 	}
@@ -117,4 +134,5 @@ func init() {
 		// 赋值SDK默认下载地址
 		GOSDKDOWNURL = "https://mirrors.ustc.edu.cn/golang"
 	}
+	return nil
 }
