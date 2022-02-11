@@ -40,7 +40,7 @@ func init() {
 			GOSDKPATH = filepath.Join(os.Getenv("LOCALAPPDATA"), "Gov")
 		} else { // 其他系统环境变量
 			// 其他环境下指定默认的GOSDKPATH
-			GOSDKPATH = filepath.Join("$HOME", "Gov")
+			GOSDKPATH = filepath.Join(os.Getenv("HOME"), "Gov")
 		}
 	}
 
@@ -76,20 +76,20 @@ func init() {
 			}
 		} else { // 其他系统环境变量
 			// 其他环境下指定默认的GOROOT
-			GOROOT = filepath.Join("$HOME", "Go")
+			GOROOT = filepath.Join(os.Getenv("HOME"), "Go")
 			// 写入环境变量
 			envStr := fmt.Sprintf(
 				"%s\n%s",
 				"export GOROOT="+GOROOT,
 				"export PATH=$GOROOT/bin:$PATH",
 			)
-			cmd := exec.Command("echo", "~/.bashrc", "<<", envStr)
+			cmd := exec.Command("echo", envStr, ">>", filepath.Join(os.Getenv("HOME"), ".bashrc"))
 			err := cmd.Run()
 			if err != nil {
 				tool.L.Error(err.Error())
 				return
 			}
-			cmd = exec.Command("source", "~/.bashrc")
+			cmd = exec.Command("source", filepath.Join(os.Getenv("HOME"), ".bashrc"))
 			err = cmd.Run()
 			if err != nil {
 				tool.L.Error(err.Error())
