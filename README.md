@@ -8,10 +8,10 @@ This is a small and flexible Golang SDK multi-version management tool
 > 有两个强烈建议的环境变量【 GOSDKPATH，GOROOT 】，以及两个可选的环境变量【 GOSDKVERURL，GOSDKDOWNURL 】需要配置,下面详细解释一下这几个环境变量的作用。
 
 ### GOSDKPATH
-> Gov在启动时会去操作系统中获取该环境变量的值，该值应该是一个文件夹，用于储存Gov工具所需要的依赖文件以及Golang SDK的各个版本文件，所以该环境变量至关重要，在不配置该环境变量时，Gov将会自动选择合适和目录作为GOSDKPATH的值（`windows: %LOCALAPPDATA%\Gov` `linux: /usr/local/Gov`），由于工作目录容易变化，因此我们强烈建议在操作系统中为该环境变量赋值。
+> Gov在启动时会去操作系统中获取该环境变量的值，该值应该是一个文件夹，用于储存Gov工具所需要的依赖文件以及Golang SDK的各个版本文件，所以该环境变量至关重要，在不配置该环境变量时，Gov将会自动选择合适和目录作为GOSDKPATH的值（`windows: %LOCALAPPDATA%\Gov` `linux: $HOME/Gov`），由于工作目录容易变化，因此我们强烈建议在操作系统中为该环境变量赋值。
 
 ### GOROOT
-> 这个是Golang SDK的环境变量，表示Golang SDK的安装位置，在不配置该环境变量时，Gov将会自动选择合适和目录作为GOROOT的值（`windows: %LOCALAPPDATA%\Go` `linux: /usr/local/Go`），；需要注意的是GOSDKPATH与GOROOT的路径不要存在嵌套关系，否则会引起致命错误，同时不建议将GOROOT配置到受保护的目录，否则每次都需要以管理员权限启动终端才能切换版本。
+> 这个是Golang SDK的环境变量，表示Golang SDK的安装位置，在不配置该环境变量时，Gov将会自动选择合适和目录作为GOROOT的值（`windows: %LOCALAPPDATA%\Go` `linux: $HOME/Go`），；需要注意的是GOSDKPATH与GOROOT的路径不要存在嵌套关系，否则会引起致命错误，同时不建议将GOROOT配置到受保护的目录，否则每次都需要以管理员权限启动终端才能切换版本。
 
 ### GOSDKVERURL
 > 当你使用Gov获取版本列表失败时，那么你应该需要配置该环境变量了，该环境变量可用值如下，后续会陆续更新到此处(我们将会在该URL之后追加参数获取版本列表，请确保能正常访问，例如：https://golang.google.cn/dl/?mode=json&include=all)：

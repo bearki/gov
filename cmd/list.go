@@ -1,3 +1,11 @@
+/**
+ *@Title list command
+ *@Desc list命令将会在该文件中定义
+ *      该命令将会列出所有可用版本
+ *@Author Bearki
+ *@DateTime 2022/01/19 15:21
+ */
+
 package cmd
 
 import (

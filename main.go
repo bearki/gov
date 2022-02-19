@@ -27,5 +27,9 @@ func main() {
 	tool.L.Trace(welcome)
 	tool.L.Info(tool.StartLine)
 	defer tool.L.Info(tool.EndLine)
+	err := conf.Init()
+	if err != nil {
+		return
+	}
 	cmd.Execute()
 }

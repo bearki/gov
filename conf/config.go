@@ -1,6 +1,7 @@
 package conf
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -14,7 +15,7 @@ import (
 )
 
 // gov version
-var Version = "0.1.0"
+var Version = "0.1.2"
 
 var (
 	// default GOSDK path
@@ -30,7 +31,7 @@ var (
 )
 
 // init env
-func init() {
+func Init() error {
 	// 从环境变量中获取SDK存放路径(环境变量优先级最高)
 	goSdkPath := os.Getenv("GOSDKPATH")
 	if len(goSdkPath) > 0 {
@@ -42,7 +43,7 @@ func init() {
 			GOSDKPATH = filepath.Join(os.Getenv("LOCALAPPDATA"), "Gov")
 		} else { // 其他系统环境变量
 			// 其他环境下指定默认的GOSDKPATH
-			GOSDKPATH = filepath.Join("/usr", "local", "Gov")
+			GOSDKPATH = filepath.Join(os.Getenv("HOME"), "Gov")
 		}
 	}
 
@@ -62,12 +63,12 @@ func init() {
 			err := tool.SetRegistryValue("GOROOT", GOROOT, 1)
 			if err != nil {
 				tool.L.Error(err.Error())
-				return
+				return err
 			}
 			PATH, err := tool.GetRegistryValue("PATH")
 			if err != nil {
 				tool.L.Error(err.Error())
-				return
+				return err
 			}
 			// 判断是否已经写入过
 			if !strings.Contains(PATH, "%GOROOT%\\bin") {
@@ -75,7 +76,7 @@ func init() {
 				err = tool.SetRegistryValue("PATH", "%GOROOT%\\bin;"+PATH, 2)
 				if err != nil {
 					tool.L.Error(err.Error())
-					return
+					return err
 				}
 			}
 			// 借助user32.dll库的函数刷新环境变量
@@ -100,31 +101,48 @@ func init() {
 			)
 		} else { // 其他系统环境变量
 			// 其他环境下指定默认的GOROOT
-			GOROOT = filepath.Join("/usr", "local", "Go")
+			GOROOT = filepath.Join(os.Getenv("HOME"), "Go")
 			// 写入环境变量
 			envStr := fmt.Sprintf(
-				"%s\n%s",
-				"export GOROOT="+GOROOT,
+				"\n%s\n%s\n",
+				"export GOROOT=$HOME/Go",
 				"export PATH=$GOROOT/bin:$PATH",
 			)
-			cmd := exec.Command("echo", "/etc/profile", "<<", envStr)
-			err := cmd.Run()
+			file, err := os.OpenFile(
+				filepath.Join(os.Getenv("HOME"), ".bashrc"),
+				os.O_CREATE|os.O_APPEND|os.O_WRONLY,
+				0777,
+			)
 			if err != nil {
 				tool.L.Error(err.Error())
-				return
+				return err
 			}
-			cmd = exec.Command("source", "/etc/profile")
-			err = cmd.Run()
+			defer file.Close()
+			_, err = file.WriteString(envStr)
 			if err != nil {
 				tool.L.Error(err.Error())
-				return
+				return err
+			}
+			// 加载环境变量
+			cmd := exec.Command(
+				"/bin/bash",
+				"-c",
+				"source "+
+					filepath.Join(os.Getenv("HOME"), ".bashrc"),
+			)
+			err = cmd.Run()
+			var errBuf bytes.Buffer
+			cmd.Stderr = &errBuf
+			if err != nil {
+				tool.L.Error("%s | %s", errBuf.String(), err.Error())
+				return err
 			}
 		}
 	}
 
 	// 从环境变量中获取SDK版本列表网址BaseUrl(环境变量优先级最高)
 	goSdkVerUrl := os.Getenv("GOSDKVERURL")
-	if len(goSdkVerUrl) > 0 {
+	if strings.Contains(goSdkVerUrl, "http") {
 		// 赋值获取到的环境变量
 		GOSDKVERURL = goSdkVerUrl
 	} else {
@@ -134,11 +152,12 @@ func init() {
 
 	// 从环境变量中获取SDK下载网址BaseUrl(环境变量优先级最高)
 	goSdkDownUrl := os.Getenv("GOSDKDOWNURL")
-	if len(goSdkDownUrl) > 0 {
+	if strings.Contains(goSdkDownUrl, "http") {
 		// 赋值获取到的环境变量
 		GOSDKDOWNURL = goSdkDownUrl
 	} else {
 		// 赋值SDK默认下载地址
 		GOSDKDOWNURL = "https://mirrors.ustc.edu.cn/golang"
 	}
+	return nil
 }

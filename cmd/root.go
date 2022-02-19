@@ -1,6 +1,6 @@
 /**
- *@Title Define command
- *@Desc All commands will be defined here
+ *@Title command root application
+ *@Desc 根命令将会在该文件中定义
  *@Author Bearki
  *@DateTime 2022/01/19 15:21
  */

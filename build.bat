@@ -1,7 +1,8 @@
 echo off
 chcp 65001
 
-SET VERSION=0.1.0
+SET VERSION=0.1.2
+SET CGO_ENABLED=0
 
 
 @REM ----------------------------- OS Windows -----------------------------
