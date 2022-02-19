@@ -1,15 +1,11 @@
 package conf
 
 import (
-	"bytes"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
-	"syscall"
-	"unsafe"
 
 	"github.com/bearki/gov/tool"
 )
@@ -70,44 +66,22 @@ func Init() error {
 				tool.L.Error(err.Error())
 				return err
 			}
-			// 判断是否已经写入过
-			if !strings.Contains(PATH, "%GOROOT%\\bin") {
-				// 写入环境变量
-				err = tool.SetRegistryValue("PATH", "%GOROOT%\\bin;"+PATH, 2)
-				if err != nil {
-					tool.L.Error(err.Error())
-					return err
-				}
-			}
-			// 借助user32.dll库的函数刷新环境变量
-			user32, err := syscall.LoadDLL("user32.dll")
+			// 写入环境变量
+			err = tool.SetRegistryValue("PATH", "%GOROOT%\\bin;"+PATH, 2)
 			if err != nil {
 				tool.L.Error(err.Error())
 				return err
 			}
-			SendMessageTimeout, err := user32.FindProc("SendMessageW")
-			if err != nil {
-				tool.L.Error(err.Error())
-				return err
-			}
-			var HWND_BROADCAST = 0xffff
-			var WM_SETTINGCHANGE = 0x001A
-			content, _ := syscall.UTF16FromString("Environment")
-			_, _, _ = SendMessageTimeout.Call(
-				uintptr(HWND_BROADCAST),
-				uintptr(WM_SETTINGCHANGE),
-				uintptr(0),
-				uintptr(unsafe.Pointer(&content[0])),
-			)
 		} else { // 其他系统环境变量
 			// 其他环境下指定默认的GOROOT
 			GOROOT = filepath.Join(os.Getenv("HOME"), "Go")
-			// 写入环境变量
+			// 格式化好要追加的环境变量
 			envStr := fmt.Sprintf(
 				"\n%s\n%s\n",
 				"export GOROOT=$HOME/Go",
 				"export PATH=$GOROOT/bin:$PATH",
 			)
+			// 打开环境变量文件
 			file, err := os.OpenFile(
 				filepath.Join(os.Getenv("HOME"), ".bashrc"),
 				os.O_CREATE|os.O_APPEND|os.O_WRONLY,
@@ -118,26 +92,15 @@ func Init() error {
 				return err
 			}
 			defer file.Close()
+			// 写入环境变量到文件中
 			_, err = file.WriteString(envStr)
 			if err != nil {
 				tool.L.Error(err.Error())
 				return err
 			}
-			// 加载环境变量
-			cmd := exec.Command(
-				"/bin/bash",
-				"-c",
-				"source "+
-					filepath.Join(os.Getenv("HOME"), ".bashrc"),
-			)
-			err = cmd.Run()
-			var errBuf bytes.Buffer
-			cmd.Stderr = &errBuf
-			if err != nil {
-				tool.L.Error("%s | %s", errBuf.String(), err.Error())
-				return err
-			}
 		}
+		// 不管是什么操作系统，配置完环境变量后都需要刷新环境变量
+		refreshEnv()
 	}
 
 	// 从环境变量中获取SDK版本列表网址BaseUrl(环境变量优先级最高)
