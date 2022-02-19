@@ -32,6 +32,6 @@ func refreshEnv() {
 	cmd.Stderr = &errBuf
 	if err != nil {
 		tool.L.Error("%s | %s", errBuf.String(), err.Error())
-		return err
+		return
 	}
 }
