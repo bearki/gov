@@ -83,12 +83,12 @@ func Init() error {
 			user32, err := syscall.LoadDLL("user32.dll")
 			if err != nil {
 				tool.L.Error(err.Error())
-				return
+				return err
 			}
 			SendMessageTimeout, err := user32.FindProc("SendMessageW")
 			if err != nil {
 				tool.L.Error(err.Error())
-				return
+				return err
 			}
 			var HWND_BROADCAST = 0xffff
 			var WM_SETTINGCHANGE = 0x001A
