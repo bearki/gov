@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"syscall"
+	"unsafe"
 
 	"github.com/bearki/gov/tool"
 )
@@ -67,13 +69,35 @@ func init() {
 				tool.L.Error(err.Error())
 				return
 			}
+			// 判断是否已经写入过
 			if !strings.Contains(PATH, "%GOROOT%\\bin") {
+				// 写入环境变量
 				err = tool.SetRegistryValue("PATH", "%GOROOT%\\bin;"+PATH, 2)
 				if err != nil {
 					tool.L.Error(err.Error())
 					return
 				}
 			}
+			// 借助user32.dll库的函数刷新环境变量
+			user32, err := syscall.LoadDLL("user32.dll")
+			if err != nil {
+				tool.L.Error(err.Error())
+				return
+			}
+			SendMessageTimeout, err := user32.FindProc("SendMessageW")
+			if err != nil {
+				tool.L.Error(err.Error())
+				return
+			}
+			var HWND_BROADCAST = 0xffff
+			var WM_SETTINGCHANGE = 0x001A
+			content, _ := syscall.UTF16FromString("Environment")
+			_, _, _ = SendMessageTimeout.Call(
+				uintptr(HWND_BROADCAST),
+				uintptr(WM_SETTINGCHANGE),
+				uintptr(0),
+				uintptr(unsafe.Pointer(&content[0])),
+			)
 		} else { // 其他系统环境变量
 			// 其他环境下指定默认的GOROOT
 			GOROOT = filepath.Join("/usr", "local", "Go")
