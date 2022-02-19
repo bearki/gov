@@ -26,7 +26,7 @@ func refreshEnv() {
 		sourceEnv,
 	)
 	// 运行命令
-	err = cmd.Run()
+	err := cmd.Run()
 	// 接收错误信息
 	var errBuf bytes.Buffer
 	cmd.Stderr = &errBuf
