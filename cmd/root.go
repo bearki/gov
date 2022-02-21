@@ -8,9 +8,9 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
+	"bytes"
 
+	"github.com/bearki/gov/tool"
 	"github.com/spf13/cobra"
 )
 
@@ -19,14 +19,31 @@ var rootCmd = &cobra.Command{}
 
 // initial binding
 func init() {
+	// 隐藏默认的工具命令
+	rootCmd.CompletionOptions.HiddenDefaultCmd = true
 	// rootCmd Append Command
 	rootCmd.AddCommand(installCmd, useCmd, removeCmd, listCmd)
 }
 
 // Run App
 func Execute() {
+	// 拦截错误输出
+	var errBuf bytes.Buffer
+	rootCmd.SetErr(&errBuf)
+	// 执行命令
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		tool.L.Error(err.Error())
 	}
+}
+
+// GetCmdNameMap 获取所有自定义的命令
+func GetCmdNameMap() map[string]struct{} {
+	cmdMap := make(map[string]struct{})
+	for _, item := range rootCmd.Commands() {
+		cmdMap[item.Name()] = struct{}{}
+		for _, items := range item.Aliases {
+			cmdMap[items] = struct{}{}
+		}
+	}
+	return cmdMap
 }
