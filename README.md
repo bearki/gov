@@ -1,11 +1,12 @@
 # Gov - Go multi-version management tool
-![Gov LOGO](https://qiniu.github.bearki.cn/gov/gov-log.png)  
-This is a small and flexible Golang SDK multi-version management tool   
+This is a small and flexible Golang SDK multi-version management tool 
+
 [![License Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-yellow)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Golang Version](https://img.shields.io/github/go-mod/go-version/bearki/gov?filename=go.mod)](https://go.dev/dl)
 ![](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-orange)
 [![Github Release](https://img.shields.io/github/v/release/bearki/gov)](https://github.com/bearki/gov/releases)
 [![Github Last Commit](https://img.shields.io/github/last-commit/bearki/gov)](https://github.com/bearki/gov/commits/main)
+![Gov LOGO](https://qiniu.github.bearki.cn/gov/gov-log.png)
 
 ## 一、提示
 > 经过一系列优化，该工具可在无任何配置状态下直接使用，是的，非常爽；在Windows、MacOS、Linux上你都能得到极致体验，多线程下载功能也提上日程，敬请期待。
