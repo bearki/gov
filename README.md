@@ -2,7 +2,7 @@
 This is a small and flexible Golang SDK multi-version management tool
 
 ## 一、提示
-> 经过一系列优化，该工具可在无任何配置状态下直接使用，是的，非常爽；Windows环境变量自动刷新已经搞定了，但是目前在linux环境下有缺陷，首次使用gov命令后需要重新打开终端，这是由于全局环境变量未刷新造成的，如有解决方案请随时通知我。
+> 经过一系列优化，该工具可在无任何配置状态下直接使用，是的，非常爽；在Windows、MacOS、Linux上你都能得到极致体验，多线程下载功能也提上日程，敬请期待。
 
 ## 二、环境变量解释
 > 有两个建议的环境变量【 GOSDKPATH，GOROOT 】，以及两个可选的环境变量【 GOSDKVERURL，GOSDKDOWNURL 】需要配置,下面详细解释一下这几个环境变量的作用。

@@ -4,7 +4,6 @@ package conf
 
 import (
 	"bytes"
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -14,16 +13,12 @@ import (
 
 // refreshEnv 刷新操作系统环境变量
 func refreshEnv() {
-	// 拼接命令
-	sourceEnv := fmt.Sprintf(
-		"source %s",
-		filepath.Join(os.Getenv("HOME"), ".bashrc"),
-	)
 	// 加载环境变量
 	cmd := exec.Command(
-		"/bin/bash",
+		os.Getenv("SHELL"),
 		"-c",
-		sourceEnv,
+		"source",
+		filepath.Join(os.Getenv("HOME"), ".bashrc"),
 	)
 	// 运行命令
 	err := cmd.Run()
