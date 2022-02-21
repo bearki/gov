@@ -101,10 +101,10 @@ func Init() error {
 			}
 			// 加载环境变量
 			cmd := exec.Command(
-				"/bin/bash",
+				os.Getenv("SHELL"),
 				"-c",
-				"source "+
-					filepath.Join(os.Getenv("HOME"), ".bashrc"),
+				"source",
+				filepath.Join(os.Getenv("HOME"), ".bashrc"),
 			)
 			err = cmd.Run()
 			var errBuf bytes.Buffer
