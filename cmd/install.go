@@ -120,7 +120,7 @@ func install(c *cobra.Command, args []string) {
 	// 开始下载
 	err = beclient.New(downloadUrl).
 		TimeOut(time.Hour).
-		DownloadMultiThread(5, 1024*1024*20).
+		DownloadMultiThread(5, 1024*1024*50).
 		Download(savePath, func(currSize, totalSize float64) {
 			t := (currSize / totalSize) * 100
 			fmt.Printf("%s downloading..................%.2f%%\r", version.FileName, t)
