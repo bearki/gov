@@ -1,7 +1,7 @@
 echo off
 chcp 65001
 
-SET VERSION=0.1.5
+SET VERSION=0.1.6
 SET CGO_ENABLED=0
 
 
