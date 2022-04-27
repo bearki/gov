@@ -29,8 +29,8 @@ This is a small and flexible Golang SDK multi-version management tool
 
 ### GOSDKDOWNURL
 > 当你使用Gov下载Go SDK失败时，那么你应该需要配置该环境变量了，该环境变量可用值如下，后续会陆续更新到此处(我们将会在该URL之后追加文件名称直接下载，请确保能正常访问，例如：https://golang.google.cn/dl/go1.10.1.windows-386.zip)：
-> * https://mirrors.ustc.edu.cn/golang （default）
-> * https://golang.google.cn/dl
+> * https://golang.google.cn/dl（default）
+> * https://mirrors.ustc.edu.cn/golang 
 > * https://go.dev/dl
 
 ## 三、配置环境变量

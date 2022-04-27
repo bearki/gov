@@ -120,7 +120,7 @@ func Init() error {
 		GOSDKDOWNURL = goSdkDownUrl
 	} else {
 		// 赋值SDK默认下载地址
-		GOSDKDOWNURL = "https://mirrors.ustc.edu.cn/golang"
+		GOSDKDOWNURL = "https://golang.google.cn/dl/"
 	}
 	return nil
 }

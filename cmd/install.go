@@ -117,13 +117,13 @@ func install(c *cobra.Command, args []string) {
 	downloadUrl := fmt.Sprintf("%s/%s", conf.GOSDKDOWNURL, version.FileName)
 	// 定义保存路径
 	savePath := filepath.Join(conf.GOSDKPATH, "pkg", version.FileName)
+	fmt.Println(downloadUrl)
 	// 开始下载
-	err = beclient.New(downloadUrl).
+	err = beclient.New(downloadUrl, true).
 		TimeOut(time.Hour).
-		DownloadMultiThread(5, 1024*1024*50).
+		DownloadMultiThread(20, 1024*1024*20).
 		Download(savePath, func(currSize, totalSize float64) {
-			t := (currSize / totalSize) * 100
-			fmt.Printf("%s downloading..................%.2f%%\r", version.FileName, t)
+			fmt.Printf("%s downloading..................%.2f%%\r", version.FileName, (currSize/totalSize)*100)
 		}).
 		Get(nil)
 	// 从新的一行开始
