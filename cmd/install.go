@@ -14,6 +14,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"time"
 
 	"github.com/bearki/beclient"
@@ -115,9 +116,14 @@ func install(c *cobra.Command, args []string) {
 	}
 	// 定义下载地址
 	downloadUrl := fmt.Sprintf("%s/%s", conf.GOSDKDOWNURL, version.FileName)
+	if ok, _ := regexp.Match(`^.*/$`, []byte(conf.GOSDKDOWNURL)); ok {
+		downloadUrl = fmt.Sprintf("%s%s", conf.GOSDKDOWNURL, version.FileName)
+	}
 	// 定义保存路径
 	savePath := filepath.Join(conf.GOSDKPATH, "pkg", version.FileName)
-	fmt.Println(downloadUrl)
+	// 打印下载路径和保存路径
+	fmt.Printf("download url: %s\n", downloadUrl)
+	fmt.Printf("download save path: %s\n", savePath)
 	// 开始下载
 	err = beclient.New(downloadUrl, true).
 		TimeOut(time.Hour).

@@ -13,6 +13,15 @@ import (
 // gov version
 var Version = "0.1.6"
 
+// env filed define
+const (
+	ENVGOSDKPATH     = "GOSDKPATH"
+	ENVGOVERSIONFILE = "GOVERSIONFILE"
+	ENVGOROOT        = "GOROOT"
+	ENVGOSDKVERURL   = "GOSDKVERURL"
+	ENVGOSDKDOWNURL  = "GOSDKDOWNURL"
+)
+
 var (
 	// default GOSDK path
 	GOSDKPATH string
@@ -29,7 +38,7 @@ var (
 // init env
 func Init() error {
 	// 从环境变量中获取SDK存放路径(环境变量优先级最高)
-	goSdkPath := os.Getenv("GOSDKPATH")
+	goSdkPath := os.Getenv(ENVGOSDKPATH)
 	if len(goSdkPath) > 0 {
 		// 赋值获取到的环境变量
 		GOSDKPATH = goSdkPath
@@ -47,7 +56,7 @@ func Init() error {
 	GOVERSIONFILE = filepath.Join(GOSDKPATH, "version.json")
 
 	// 从环境变量中获取Go Root存放路径(环境变量优先级最高)
-	goRootPath := os.Getenv("GOROOT")
+	goRootPath := os.Getenv(ENVGOROOT)
 	if len(goRootPath) > 0 {
 		// 赋值获取到的环境变量
 		GOROOT = goRootPath
@@ -56,7 +65,7 @@ func Init() error {
 			// Windows 环境下指定默认的GOROOT为%LOCALAPPDATA%\Go
 			GOROOT = filepath.Join(os.Getenv("LOCALAPPDATA"), "Go")
 			// 将GOROOT和%GOROOT/bin%写入环境变量
-			err := tool.SetRegistryValue("GOROOT", GOROOT, 1)
+			err := tool.SetRegistryValue(ENVGOROOT, GOROOT, 1)
 			if err != nil {
 				tool.L.Error(err.Error())
 				return err
@@ -104,7 +113,7 @@ func Init() error {
 	}
 
 	// 从环境变量中获取SDK版本列表网址BaseUrl(环境变量优先级最高)
-	goSdkVerUrl := os.Getenv("GOSDKVERURL")
+	goSdkVerUrl := os.Getenv(ENVGOSDKVERURL)
 	if strings.Contains(goSdkVerUrl, "http") {
 		// 赋值获取到的环境变量
 		GOSDKVERURL = goSdkVerUrl
@@ -114,7 +123,7 @@ func Init() error {
 	}
 
 	// 从环境变量中获取SDK下载网址BaseUrl(环境变量优先级最高)
-	goSdkDownUrl := os.Getenv("GOSDKDOWNURL")
+	goSdkDownUrl := os.Getenv(ENVGOSDKDOWNURL)
 	if strings.Contains(goSdkDownUrl, "http") {
 		// 赋值获取到的环境变量
 		GOSDKDOWNURL = goSdkDownUrl
