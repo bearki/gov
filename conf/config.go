@@ -11,7 +11,7 @@ import (
 )
 
 // gov version
-var Version = "0.1.6"
+var Version = "0.1.7"
 
 // env filed define
 const (
