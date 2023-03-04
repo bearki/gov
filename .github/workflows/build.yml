@@ -71,7 +71,7 @@ jobs:
       with:
         tag_name: ${{ github.ref }}
         name: Release ${{ github.ref }}
-        body: TODO New Release.
+        body_path: .Release
         draft: false
         prerelease: false
         files: ./build/*
