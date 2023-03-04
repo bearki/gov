@@ -14,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/bearki/gov/conf"
 	"github.com/bearki/gov/tool"
@@ -54,7 +55,7 @@ func init() {
 	)
 }
 
-// Install the new SDK version
+// Get Go SDK version list
 func list(c *cobra.Command, args []string) {
 	// 文件名MAP
 	var tempVersionMap = make(map[string]struct{})
@@ -90,91 +91,76 @@ func list(c *cobra.Command, args []string) {
 		return
 	}
 
-	// 判断要显示哪些列表
-	switch show {
-
-	case "yes": // 仅显示已安装
-		// 总量
-		total := 0
-		for _, item := range versionList {
-			// 文件名
-			filename := ""
-			for _, items := range item.Files {
-				if items.Arch == runtime.GOARCH && items.OS == runtime.GOOS {
-					filename = items.FileName
-					break
-				}
+	// 符合条件的版本列表
+	var showVersionList []string
+	for _, item := range versionList {
+		// 文件名
+		filename := ""
+		for _, items := range item.Files {
+			if items.Arch == runtime.GOARCH && items.OS == runtime.GOOS {
+				filename = items.FileName
+				break
 			}
-			// 判断是否有匹配到文件
-			if len(filename) == 0 {
-				// 跳过
-				continue
-			}
+		}
+		// 判断是否有匹配到文件
+		if len(filename) == 0 {
+			// 跳过
+			continue
+		}
+		// 是否符合条件
+		switch show {
+		case "yes":
 			// 判断文件是否存在
 			if _, ok := tempVersionMap[filename]; ok {
-				total++
-				// 已安装
-				tool.L.Info("%-20s %-40s [installed]", item.Version, filename)
+				// 追加到需要渲染的列表中
+				showVersionList = append(showVersionList, fmt.Sprintf("%-20s %-40s [installed]", item.Version, filename))
 			}
-		}
-		tool.L.Warn("SDK Total: %d", total)
-
-	case "not": // 仅显示未安装
-		// 总量
-		total := 0
-		for _, item := range versionList {
-			// 文件名
-			filename := ""
-			for _, items := range item.Files {
-				if items.Arch == runtime.GOARCH && items.OS == runtime.GOOS {
-					filename = items.FileName
-					break
-				}
-			}
-			// 判断是否有匹配到文件
-			if len(filename) == 0 {
-				// 跳过
-				continue
-			}
+		case "not":
 			// 判断文件是否存在
-			if _, ok := tempVersionMap[filename]; !ok {
-				// 总量加一
-				total++
-				// 未安装
-				tool.L.Info("%-20s %-40s [not installed]", item.Version, filename)
+			if _, ok := tempVersionMap[filename]; ok {
+				// 追加到需要渲染的列表中
+				showVersionList = append(showVersionList, fmt.Sprintf("%-20s %-40s [not installed]", item.Version, filename))
 			}
-		}
-		tool.L.Warn("SDK Total: %d", total)
-
-	default: // 显示全部
-		// 总量
-		total := 0
-		for _, item := range versionList {
-			// 文件名
-			filename := ""
-			for _, items := range item.Files {
-				if items.Arch == runtime.GOARCH && items.OS == runtime.GOOS {
-					filename = items.FileName
-					break
-				}
-			}
-			// 判断是否有匹配到文件
-			if len(filename) == 0 {
-				// 跳过
-				continue
-			}
-			// 总量加一
-			total++
+		default:
 			// 判断文件是否存在
 			if _, ok := tempVersionMap[filename]; ok {
 				// 已安装
-				tool.L.Trace("%-20s %-40s [installed]", item.Version, filename)
+				// 追加到需要渲染的列表中
+				showVersionList = append(showVersionList, fmt.Sprintf("%-20s %-40s [installed]", item.Version, filename))
 			} else {
 				// 未安装
-				tool.L.Info("%-20s %-40s [not installed]", item.Version, filename)
+				// 追加到需要渲染的列表中
+				showVersionList = append(showVersionList, fmt.Sprintf("%-20s %-40s [not installed]", item.Version, filename))
 			}
 		}
-		tool.L.Warn("SDK Total: %d", total)
+	}
 
+	// 打印总量
+	tool.L.Warn("SDK Total: %d", len(showVersionList))
+
+	// 每页显示数据量
+	const pageCap = 15
+	// 遍历渲染列表，执行分页显示
+	for i, v := range showVersionList {
+		// 每满指定数据量就执行等待
+		if (i+1)%pageCap == 0 {
+			// 打印提示内容
+			fmt.Print("Please press any key to view the rest (exit Q): ")
+			var b string
+			fmt.Scanln(&b)
+			// 是否停止打印
+			if b == "Q" || b == "q" {
+				// 停止打印
+				return
+			}
+		}
+		// 根据不同状态打印不同颜色
+		if strings.Contains(v, "[installed]") {
+			// 已安装打印蓝色
+			tool.L.Trace(v)
+		} else {
+			// 未安装打印白色
+			tool.L.Info(v)
+		}
 	}
 }
