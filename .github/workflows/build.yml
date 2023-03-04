@@ -86,4 +86,11 @@ jobs:
         body: TODO New Release.
         draft: false
         prerelease: false
-        files: ./build/*
+        files: |
+          ./build/gov-windows-386.exe
+          ./build/gov-windows-amd64.exe
+          ./build/gov-linux-386
+          ./build/gov-linux-amd64
+          ./build/gov-linux-arm64
+          ./build/gov-darwin-amd64
+          ./build/gov-darwin-arm64
