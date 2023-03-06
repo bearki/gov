@@ -15,9 +15,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Dump GitHub context
-      id: github_context_step
-      run: echo '${{ toJSON(github) }}'
+    - name: Dump Env context
+      id: env_context_step
+      run: echo '${{ toJSON(env) }}'
 
     - name: Set up Go
       uses: actions/setup-go@v3
