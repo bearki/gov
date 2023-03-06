@@ -14,10 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    
-    - name: Dump Env context
-      id: env_context_step
-      run: echo '${{ toJSON(env) }}'
 
     - name: Set up Go
       uses: actions/setup-go@v3
@@ -71,6 +67,7 @@ jobs:
       with:
         tag_name: ${{ github.ref }}
         name: Release ${{ github.ref_name }}
+        body_path: .Release
         draft: false
         prerelease: false
         files: ./build/*
