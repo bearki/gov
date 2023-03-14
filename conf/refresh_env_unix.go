@@ -18,7 +18,7 @@ func refreshEnv() {
 		os.Getenv("SHELL"),
 		"-c",
 		"source",
-		filepath.Join(os.Getenv("HOME"), ".bashrc"),
+		filepath.Join(os.Getenv("HOME"), ".profile"),
 	)
 	// 运行命令
 	err := cmd.Run()

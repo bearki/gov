@@ -33,14 +33,14 @@ func Init() error {
 	} else {
 		// 格式化好要追加的环境变量
 		envStr := fmt.Sprintf(
-			"\n%s\n%s\n",
+			"\n# set Golang and Gov Env\n%s\n%s\n",
 			"export GOROOT=$HOME/Go",
 			"export PATH=$GOROOT/bin:$PATH",
 		)
 
 		// 打开环境变量文件
 		file, err := os.OpenFile(
-			filepath.Join(os.Getenv("HOME"), ".bashrc"),
+			filepath.Join(os.Getenv("HOME"), ".profile"),
 			os.O_CREATE|os.O_APPEND|os.O_WRONLY,
 			0777,
 		)
