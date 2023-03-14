@@ -3,7 +3,9 @@
 package conf
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -41,7 +43,7 @@ func Init() error {
 		// 打开环境变量文件
 		file, err := os.OpenFile(
 			filepath.Join(os.Getenv("HOME"), ".profile"),
-			os.O_CREATE|os.O_APPEND|os.O_WRONLY,
+			os.O_CREATE|os.O_APPEND|os.O_RDWR,
 			0777,
 		)
 		if err != nil {
@@ -50,15 +52,22 @@ func Init() error {
 		}
 		defer file.Close()
 
-		// 写入环境变量到文件中
-		_, err = file.WriteString(envStr)
-		if err != nil {
-			tool.L.Error(err.Error())
-			return err
+		// 检查文件中是否包含环境变量了
+		fileData, _ := io.ReadAll(file)
+		if !bytes.Contains(fileData, []byte("GOROOT")) {
+			// 写入环境变量到文件中
+			_, err = file.WriteString(envStr)
+			if err != nil {
+				tool.L.Error(err.Error())
+				return err
+			}
+
+			// 配置完环境变量后都需要刷新环境变量
+			refreshEnv()
 		}
 
-		// 配置完环境变量后都需要刷新环境变量
-		refreshEnv()
+		// 打印一个醒目的提示
+		tool.L.Error("请立即重启终端！！！")
 	}
 
 	// 从环境变量中获取SDK版本列表网址BaseUrl(环境变量优先级最高)
