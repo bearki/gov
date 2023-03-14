@@ -67,7 +67,7 @@ func Init() error {
 		}
 
 		// 打印一个醒目的提示
-		tool.L.Error("请立即重启终端！！！")
+		tool.L.Error("Please restart the terminal now! ! !")
 	}
 
 	// 从环境变量中获取SDK版本列表网址BaseUrl(环境变量优先级最高)
