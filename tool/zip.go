@@ -115,18 +115,12 @@ func DeCompressGzip(gzipFile string, dstPath string) error {
 		if err != nil {
 			return err
 		}
-		// 去掉第一层文件夹
+		// 转换为目标文件路径
 		newFileName := strings.ReplaceAll(filepath.Join(h.Name), "\\", "/")
-		pathList := strings.Split(newFileName, "/")
-		if len(pathList) >= 2 {
-			pathList = pathList[1:]
-		}
-		if pathList[0] == "go" {
-			continue
-		}
+		// 移除前置go目录
+		newFileName = strings.TrimPrefix(newFileName, "go/")
 		// 文件或文件夹的目标路径
-		dstFile := filepath.Join(pathList...)
-		dstFile = filepath.Join(dstPath, dstFile)
+		dstFile := filepath.Join(dstPath, newFileName)
 		// 判断文件或文件夹是否已存在
 		_, err = os.Stat(dstFile)
 		if err == nil {
@@ -135,12 +129,12 @@ func DeCompressGzip(gzipFile string, dstPath string) error {
 		}
 		// 判断是文件还是文件夹
 		if h.FileInfo().IsDir() {
-			// 直接创建文件夹即可
-			err = os.MkdirAll(dstFile, 0755)
-			if err != nil {
-				return err
-			}
 			continue
+		}
+		// 直接创建文件夹即可
+		err = os.MkdirAll(filepath.Dir(dstFile), 0755)
+		if err != nil {
+			return err
 		}
 		// 在函数中使用defer
 		err = func() error {
