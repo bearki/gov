@@ -4,73 +4,11 @@ import (
 	"archive/tar"
 	"archive/zip"
 	"compress/gzip"
-	"crypto/sha256"
-	"encoding/hex"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/gookit/color"
 )
-
-const StartLine = `
--------------------------------- Gov Start --------------------------------
-`
-const EndLine = `
---------------------------------- Gov End ---------------------------------
-`
-
-// 日志对象
-type Log struct {
-	newLine string
-}
-
-// 实例化日志
-var L Log = Log{
-	newLine: "\r\n",
-}
-
-// print log
-func (l *Log) print(newColor color.Color, format string, val ...interface{}) {
-	if len(val) > 0 {
-		fmt.Println(newColor.Sprintf(format, val...))
-		return
-	}
-	fmt.Println(newColor.Sprintf(format))
-}
-
-// error log
-func (l *Log) Error(format string, val ...interface{}) {
-	l.print(color.Red, format, val...)
-}
-
-// Warning log
-func (l *Log) Warn(format string, val ...interface{}) {
-	l.print(color.Yellow, format, val...)
-}
-
-// Success log
-func (l *Log) Success(format string, val ...interface{}) {
-	l.print(color.Green, format, val...)
-}
-
-// Trace log
-func (l *Log) Trace(format string, val ...interface{}) {
-	l.print(color.Blue, format, val...)
-}
-
-// Info log
-func (l *Log) Info(format string, val ...interface{}) {
-	l.print(color.White, format, val...)
-}
-
-// Math data sha356 value
-func MathSha256(data []byte) string {
-	str := sha256.Sum256(data)
-	return hex.EncodeToString(str[:])
-}
 
 // DeCompressZip Zip解压文件
 // @params zipFile  string 压缩文件路径
@@ -177,18 +115,12 @@ func DeCompressGzip(gzipFile string, dstPath string) error {
 		if err != nil {
 			return err
 		}
-		// 去掉第一层文件夹
+		// 转换为目标文件路径
 		newFileName := strings.ReplaceAll(filepath.Join(h.Name), "\\", "/")
-		pathList := strings.Split(newFileName, "/")
-		if len(pathList) >= 2 {
-			pathList = pathList[1:]
-		}
-		if pathList[0] == "go" {
-			continue
-		}
+		// 移除前置go目录
+		newFileName = strings.TrimPrefix(newFileName, "go/")
 		// 文件或文件夹的目标路径
-		dstFile := filepath.Join(pathList...)
-		dstFile = filepath.Join(dstPath, dstFile)
+		dstFile := filepath.Join(dstPath, newFileName)
 		// 判断文件或文件夹是否已存在
 		_, err = os.Stat(dstFile)
 		if err == nil {
@@ -197,12 +129,12 @@ func DeCompressGzip(gzipFile string, dstPath string) error {
 		}
 		// 判断是文件还是文件夹
 		if h.FileInfo().IsDir() {
-			// 直接创建文件夹即可
-			err = os.MkdirAll(dstFile, 0755)
-			if err != nil {
-				return err
-			}
 			continue
+		}
+		// 直接创建文件夹即可
+		err = os.MkdirAll(filepath.Dir(dstFile), 0755)
+		if err != nil {
+			return err
 		}
 		// 在函数中使用defer
 		err = func() error {

@@ -31,13 +31,13 @@ func Init() error {
 		GOROOT = goRootPath
 	} else {
 		// 将GOROOT写入环境变量
-		err := tool.WriteEnv(ENVGOROOT, GOROOT, 1)
+		err := WriteEnv(ENVGOROOT, GOROOT, 1)
 		if err != nil {
 			tool.L.Error(err.Error())
 			return err
 		}
 		// // 将%GOROOT/bin%写入PATH环境变量
-		err = tool.WriteEnv("PATH", "%GOROOT%\\bin;"+os.Getenv("PATH"), 2)
+		err = WriteEnv("PATH", "%GOROOT%\\bin;"+os.Getenv("PATH"), 2)
 		if err != nil {
 			tool.L.Error(err.Error())
 			return err
