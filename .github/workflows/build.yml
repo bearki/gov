@@ -18,49 +18,49 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
-        go-version: 1.19
+        go-version: 1.21.1
 
     - name: Build (windows-386)
       run: |
         export GOOS=windows
         export GOARCH=386
-        go build -v -ldflags "-s -w" -o ./build/gov-${GOOS}-${GOARCH}.exe .
+        go build -v -ldflags "-s -w -X github.com/bearki/gov/conf.Version=${{ github.ref_name }}" -o ./build/gov-${GOOS}-${GOARCH}.exe .
     
     - name: Build (windows-amd64)
       run: |
         export GOOS=windows
         export GOARCH=amd64
-        go build -v -ldflags "-s -w" -o ./build/gov-${GOOS}-${GOARCH}.exe .
+        go build -v -ldflags "-s -w -X github.com/bearki/gov/conf.Version=${{ github.ref_name }}" -o ./build/gov-${GOOS}-${GOARCH}.exe .
         
     - name: Build (linux-386)
       run: |
         export GOOS=linux
         export GOARCH=386
-        go build -v -ldflags "-s -w" -o ./build/gov-${GOOS}-${GOARCH} .
+        go build -v -ldflags "-s -w -X github.com/bearki/gov/conf.Version=${{ github.ref_name }}" -o ./build/gov-${GOOS}-${GOARCH} .
         
     - name: Build (linux-amd64)
       run: |
         export GOOS=linux
         export GOARCH=amd64
-        go build -v -ldflags "-s -w" -o ./build/gov-${GOOS}-${GOARCH} .
+        go build -v -ldflags "-s -w -X github.com/bearki/gov/conf.Version=${{ github.ref_name }}" -o ./build/gov-${GOOS}-${GOARCH} .
         
     - name: Build (linux-arm64)
       run: |
         export GOOS=linux
         export GOARCH=arm64
-        go build -v -ldflags "-s -w" -o ./build/gov-${GOOS}-${GOARCH} .
+        go build -v -ldflags "-s -w -X github.com/bearki/gov/conf.Version=${{ github.ref_name }}" -o ./build/gov-${GOOS}-${GOARCH} .
         
     - name: Build (darwin-amd64)
       run: |
         export GOOS=darwin
         export GOARCH=amd64
-        go build -v -ldflags "-s -w" -o ./build/gov-${GOOS}-${GOARCH} .
+        go build -v -ldflags "-s -w -X github.com/bearki/gov/conf.Version=${{ github.ref_name }}" -o ./build/gov-${GOOS}-${GOARCH} .
         
     - name: Build (darwin-arm64)
       run: |
         export GOOS=darwin
         export GOARCH=arm64
-        go build -v -ldflags "-s -w" -o ./build/gov-${GOOS}-${GOARCH} .
+        go build -v -ldflags "-s -w -X github.com/bearki/gov/conf.Version=${{ github.ref_name }}" -o ./build/gov-${GOOS}-${GOARCH} .
         
     - name: Create Release and Upload Release Asset
       uses: softprops/action-gh-release@v1

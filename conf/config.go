@@ -5,7 +5,7 @@ import (
 )
 
 // gov version
-var Version = "0.1.10"
+var Version string
 
 // env filed define
 const (
