@@ -11,12 +11,13 @@ import (
 )
 
 // DeCompressZip Zip解压文件
-// @params zipFile  string 压缩文件路径
-// @params dstPath  string 解压后的文件夹路径
-// @return          error  错误信息
-func DeCompressZip(zipFile string, dstPath string) error {
+//
+//	@var	zipFile	压缩文件路径
+//	@var	dstDir	解压后的文件夹路径
+//	@return	错误信息
+func DeCompressZip(zipFile string, dstDir string) error {
 	// 不管三七二十一，先创建目标文件夹
-	err := os.MkdirAll(dstPath, 0755)
+	err := os.MkdirAll(dstDir, 0755)
 	if err != nil {
 		return err
 	}
@@ -28,65 +29,67 @@ func DeCompressZip(zipFile string, dstPath string) error {
 	defer reader.Close()
 	// 遍历压缩包的内容
 	// 注意：reader.File获取到的是压缩包内的所有文件，包括子文件夹下的文件
-	for _, file := range reader.File {
-		// 去掉第一层文件夹
-		newFileName := strings.ReplaceAll(filepath.Join(file.Name), "\\", "/")
-		pathList := strings.Split(newFileName, "/")
-		if len(pathList) >= 2 {
-			pathList = pathList[1:]
-		}
-		if pathList[0] == "go" {
-			continue
-		}
+	for _, f := range reader.File {
+		// 转换为目标文件路径
+		dstFileName := strings.ReplaceAll(filepath.Join(f.Name), "\\", "/")
+		// 移除前置go目录
+		dstFileName = strings.TrimPrefix(dstFileName, "go/")
 		// 文件或文件夹的目标路径
-		dstFile := filepath.Join(pathList...)
-		dstFile = filepath.Join(dstPath, dstFile)
+		dstFilePath := filepath.Join(dstDir, dstFileName)
 		// 判断文件或文件夹是否已存在
-		_, err = os.Stat(dstFile)
+		_, err = os.Stat(dstFilePath)
 		if err == nil {
 			// 跳过该文件
 			continue
 		}
-		// 文件夹就不解压出来了
-		if file.FileInfo().IsDir() { // 文件夹
-			// 不管三七二十一，先创建目标文件夹
-			err := os.MkdirAll(dstFile, 0755)
-			if err != nil {
-				return err
-			}
-			// 文件夹创建完毕就跳过吧
+		// 判断是文件还是文件夹
+		if f.FileInfo().IsDir() {
 			continue
-		} else { // 文件
-			// 打开压缩包内的文件
-			srcFile, err := file.Open()
-			if err != nil {
-				return err
+		}
+		// 直接创建文件夹即可
+		err = os.MkdirAll(filepath.Dir(dstFilePath), 0755)
+		if err != nil {
+			return err
+		}
+		// 在函数中使用defer
+		err = func() error {
+			// 打开源文件
+			srcFile, e := f.Open()
+			if e != nil {
+				return e
 			}
 			defer srcFile.Close()
-			// 在文件夹内创建这个文件
-			destFile, err := os.Create(dstFile)
-			if err != nil {
-				return err
+			// 创建目标文件
+			dstFile, e := os.Create(dstFilePath)
+			if e != nil {
+				return e
 			}
-			defer destFile.Close()
-			// 执行文件拷贝
-			_, err = io.Copy(destFile, srcFile)
-			if err != nil {
-				return err
+			defer dstFile.Close()
+			// 拷贝整个数据
+			_, e = io.Copy(dstFile, srcFile)
+			if e != nil {
+				return e
 			}
+			// OK
+			return nil
+		}()
+		if err != nil {
+			return err
 		}
 	}
+
 	// 全部解压完毕
 	return nil
 }
 
 // DeCompressGzip Gzip解压文件
-// @params gzipFile string 压缩文件路径
-// @params dstPath  string 解压后的文件夹路径
-// @return          error  错误信息
-func DeCompressGzip(gzipFile string, dstPath string) error {
+//
+//	@var	gzipFile	压缩文件路径
+//	@var	dstDir		解压后的文件夹路径
+//	@return	错误信息
+func DeCompressGzip(gzipFile string, dstDir string) error {
 	// 不管三七二十一，先创建目标文件夹
-	err := os.MkdirAll(dstPath, 0755)
+	err := os.MkdirAll(dstDir, 0755)
 	if err != nil {
 		return err
 	}
@@ -110,19 +113,20 @@ func DeCompressGzip(gzipFile string, dstPath string) error {
 		h, err := tr.Next()
 		// 是否读取结束
 		if err == io.EOF {
+			// OK
 			return nil
 		}
 		if err != nil {
 			return err
 		}
 		// 转换为目标文件路径
-		newFileName := strings.ReplaceAll(filepath.Join(h.Name), "\\", "/")
+		dstFileName := strings.ReplaceAll(filepath.Join(h.Name), "\\", "/")
 		// 移除前置go目录
-		newFileName = strings.TrimPrefix(newFileName, "go/")
+		dstFileName = strings.TrimPrefix(dstFileName, "go/")
 		// 文件或文件夹的目标路径
-		dstFile := filepath.Join(dstPath, newFileName)
+		dstFilePath := filepath.Join(dstDir, dstFileName)
 		// 判断文件或文件夹是否已存在
-		_, err = os.Stat(dstFile)
+		_, err = os.Stat(dstFilePath)
 		if err == nil {
 			// 跳过该文件
 			continue
@@ -132,29 +136,27 @@ func DeCompressGzip(gzipFile string, dstPath string) error {
 			continue
 		}
 		// 直接创建文件夹即可
-		err = os.MkdirAll(filepath.Dir(dstFile), 0755)
+		err = os.MkdirAll(filepath.Dir(dstFilePath), 0755)
 		if err != nil {
 			return err
 		}
 		// 在函数中使用defer
 		err = func() error {
-			// 创建或打开这个文件
-			fw, e := os.OpenFile(
-				dstFile,
-				os.O_CREATE|os.O_WRONLY,
-				os.FileMode(h.Mode),
-			)
+			// 创建目标文件
+			dstFile, e := os.Create(dstFilePath)
 			if e != nil {
 				return e
 			}
-			defer fw.Close()
+			defer dstFile.Close()
 			// 拷贝整个数据
-			_, e = io.Copy(fw, tr)
+			_, e = io.Copy(dstFile, tr)
 			if e != nil {
 				return e
 			}
+			// OK
 			return nil
 		}()
+		// 检查
 		if err != nil {
 			return err
 		}
