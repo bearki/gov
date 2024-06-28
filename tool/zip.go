@@ -65,6 +65,11 @@ func DeCompressZip(zipFile string, dstDir string) error {
 				return e
 			}
 			defer dstFile.Close()
+			// 赋值文件权限
+			e = dstFile.Chmod(f.Mode())
+			if e != nil {
+				return e
+			}
 			// 拷贝整个数据
 			_, e = io.Copy(dstFile, srcFile)
 			if e != nil {
@@ -148,6 +153,11 @@ func DeCompressGzip(gzipFile string, dstDir string) error {
 				return e
 			}
 			defer dstFile.Close()
+			// 赋值文件权限
+			e = dstFile.Chmod(h.FileInfo().Mode())
+			if e != nil {
+				return e
+			}
 			// 拷贝整个数据
 			_, e = io.Copy(dstFile, tr)
 			if e != nil {
